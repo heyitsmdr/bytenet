@@ -1,0 +1,130 @@
+@import "xterm/css/xterm.css";
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap");
+
+$hacker-color: #32df17;
+$hacker-color-unoccupied: #376d2e;
+$hacker-color-light: #b3ffc1;
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  overflow: hidden;
+}
+
+.game-container {
+  height: 100%;
+  display: flex;
+
+  .vm-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-family: Ubuntu, sans-serif;
+
+    .row-container {
+      flex-grow: 1;
+      display: flex;
+      gap: 5px;
+      max-height: 11.11%; /* 100 / 9 rows */
+
+      .vm {
+        flex-shrink: 1;
+        border: 1px dashed $hacker-color-unoccupied;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        &.owned {
+          border: 1px solid $hacker-color;
+        }
+
+        &.connected {
+          border-color: #ff0;
+        }
+
+        .ip-address {
+          display: flex;
+          color: $hacker-color;
+          font-size: 0.7em;
+          justify-content: center;
+          flex-shrink: 1;
+          background-color: #0b0b0b;
+          padding: 5px 0;
+        }
+
+        .owner {
+          flex-grow: 1;
+          color: $hacker-color;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          font-size: 0.9em;
+
+          .name {
+            color: #00e5ff;
+            font-size: 0.9em;
+          }
+        }
+
+        .specs {
+          flex-grow: 1;
+          color: $hacker-color;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 0.7em;
+          flex-direction: column;
+
+          .stat {
+            color: $hacker-color-light;
+          }
+        }
+
+        &:hover {
+          cursor: pointer;
+          background-color: #090909;
+          border-color: #cbf8d9;
+        }
+      }
+    }
+  }
+
+  .terminal-container {
+    flex-shrink: 1;
+    background-color: #000;
+    border-left: 3px solid $hacker-color;
+    padding: 10px;
+
+    #terminal-loading {
+      color: #fff;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      font-family: Ubuntu, sans-serif;
+      font-size: 0.8em;
+      opacity: 0;
+      transition: opacity 0.1s ease-in-out;
+
+      &.visible {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.xterm .xterm-screen {
+  background-color: #000;
+}
