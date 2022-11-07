@@ -38,6 +38,17 @@ jobs:
         run: |
           npm run build
 
+      - name: Install firebase functions dependencies
+        working-directory: ./functions
+        run: npm ci
+
+      - name:  Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+            args: deploy
+        env:
+            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
