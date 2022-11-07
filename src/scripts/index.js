@@ -9,6 +9,6 @@ const _Game = {};
 _Game.FB = new Firebase(_Game);
 _Game.Term = new VMTerminal(_Game);
 _Game.VMs = new VMs(_Game);
-_Game.Funcs = new CloudFunctions(_Game);
+_Game.CloudFuncs = new CloudFunctions(_Game);
 
 window.Game = _Game;

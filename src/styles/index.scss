@@ -30,7 +30,14 @@ body {
     margin-left: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
+    padding-right: 3px;
+    border-right: 3px solid $hacker-color;
     font-family: Ubuntu, sans-serif;
+    transition: all 0.1s ease-in-out;
+
+    &.hidden {
+      display: none;
+    }
 
     .row-container {
       flex-grow: 1;
@@ -76,6 +83,13 @@ body {
             color: #00e5ff;
             font-size: 0.9em;
           }
+
+          .buy-cost {
+            color: #caca18;
+            background-color: #181818;
+            padding: 5px 10px;
+            border-radius: 5px;
+          }
         }
 
         .specs {
@@ -86,6 +100,10 @@ body {
           align-items: center;
           font-size: 0.7em;
           flex-direction: column;
+
+          &.hidden {
+            display: none;
+          }
 
           .stat {
             color: $hacker-color-light;
@@ -104,7 +122,6 @@ body {
   .terminal-container {
     flex-shrink: 1;
     background-color: #000;
-    border-left: 3px solid $hacker-color;
     padding: 10px;
 
     #terminal-loading {

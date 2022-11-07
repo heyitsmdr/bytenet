@@ -6,7 +6,7 @@ import {
 //getDocs,
   query,
   collection,
-  setDoc,
+//  setDoc,
   updateDoc,
   onSnapshot
 } from 'firebase/firestore';
@@ -38,6 +38,7 @@ export class Firebase {
     this.app = initializeApp(firebaseConfig);
     this.db = getFirestore(this.app);
     this.auth = getAuth(this.app);
+    this.subs = { user: null, servers: null };
 
     onAuthStateChanged(this.auth, async user => {
       if(!user) {
@@ -47,13 +48,15 @@ export class Firebase {
 
       this.Game.Term.userUid = user.uid;
 
-      onSnapshot(doc(this.db, 'users', user.uid), doc => {
+      this.subs['user'] = onSnapshot(doc(this.db, 'users', user.uid), doc => {
         // User account (auth) was created, but cloud function didn't complete yet to initialize the user.
         if (!doc.exists()) {
           return;
         }
 
         this.Game.Term.user = doc.data();
+        this.Game.VMs.setNetwork(doc.data()['network']);
+
         if (
           this.Game.Term.state == 'TERMINAL_STATE_PREAUTH' ||
           this.Game.Term.state == 'TERMINAL_STATE_LOGIN_PASSWORD' ||
@@ -62,15 +65,24 @@ export class Firebase {
           this.Game.Term.loggedIn();
         }
       });
+    });
 
-      onSnapshot(query(collection(this.db, 'servers')), async snapshot => {
-        this.Game.VMs.servers = {};
-
-        snapshot.forEach(async doc => {
-          const data = doc.data();
-          await this.Game.VMs.handleServerData(data);
-        });
+    this.subs['servers'] = onSnapshot(query(collection(this.db, 'servers')), async snapshot => {
+      // First, determine if any servers were removed.
+      const existingIPs = snapshot.docs.map(doc => doc.data()['ip']);
+      Object.keys(this.Game.VMs.servers).forEach(async ip => {
+        if (existingIPs.indexOf(ip) == -1) {
+          await this.Game.VMs.handleServerData(ip, null);
+        }
       });
+
+      this.Game.VMs.servers = {};
+      snapshot.forEach(async doc => {
+        const data = doc.data();
+        this.Game.VMs.servers[data.ip] = data;
+      });
+
+      this.Game.VMs.resync();
     });
   }
 
@@ -106,6 +118,8 @@ export class Firebase {
 
   async logout() {
     await signOut(this.auth);
+    this.subs['user']();
+    this.subs['servers']();
   }
 
   async create(email, pass) {
@@ -113,59 +127,29 @@ export class Firebase {
       await createUserWithEmailAndPassword(this.auth, email, pass);
       this.Game.Term.write('{green}User created.{reset}');
       this.Game.Term.write('{green}Initializing user..{reset}');
-      await this.Game.Funcs.initUserData({ nick: email.split('@')[0] });
+      await this.Game.CloudFuncs.initUserData({ nick: email.split('@')[0] });
     } catch (err) {
       console.log(err);
     }
   }
 
-  async updateUser(userData) {
+  async updateUser(data) {
     try {
-      await updateDoc(doc(this.db, 'users', this.auth.currentUser.uid), userData);
+      await updateDoc(doc(this.db, 'users', this.auth.currentUser.uid), data);
     } catch(err) {
       console.log(err);
     }
   }
 
-  async getServerData(ip) {
+  async getUserData(ref) {
     try {
-      const ref = doc(this.db, 'servers', ip);
-      const obj = await getDoc(ref);
-  
-      if (!obj.exists()) {
-        return null;
+      if (ref.constructor.name != 'Xc') {
+        // If not a DocumentReference, it must be already expanded, so just return it.
+        return ref;
       }
-
-      const data = obj.data();
-      data.owner = (await getDoc(data.owner)).data();
-
-      return obj.data();
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  }
-
-  async getUserData(user) {
-    try {
-      return (await getDoc(user)).data();
+      return (await getDoc(ref)).data();
     } catch(err) {
       console.log(err);
-    }
-  }
-  
-  async initializeServer(ip) {
-    try {
-      const vm = {
-        ip: ip,
-        owner: doc(this.db, 'users/' + this.auth.currentUser.uid),
-      };
-
-      await setDoc(doc(this.db, 'servers', ip), vm);
-      return this.getServerData(ip);
-    } catch (err) {
-      console.log(err);
-      return null;
     }
   }
 }

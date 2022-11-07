@@ -70,12 +70,15 @@ export class ssh extends ShellCommand {
       return;
     }
 
-    this.write(`Connecting to {yellow}${ip}{reset}..`);
+    this.write(`Connecting to {magenta}${ip}{reset}..`);
+    await sleep(1000);
 
     let vm = this.Game.VMs.getServer(ip);
     if (!vm) {
-      await this.Game.FB.initializeServer(ip);
-      vm = this.Game.VMs.getServer(ip);
+      this.write(`No response.\n\n\rThere does not appear to be an active VM running at that address. You can purchase a VM there for {yellow}$100{reset} by running {yellow}buy ${ip}{reset}.`);
+      // await this.Game.FB.initializeServer(ip);
+      // vm = this.Game.VMs.getServer(ip);
+      return;
     }
 
     if (vm.owner.uid != this.userUid) {
@@ -83,11 +86,29 @@ export class ssh extends ShellCommand {
       return;
     }
 
-    await sleep(1000);
-
     this.write(`\r\nConnected.`);
     this.setConnection(ip);
     this.updatePrompt();
+  }
+}
+
+export class buy extends ShellCommand {
+  static help() {
+    return 'Purchase a VM.';
+  }
+
+  static async run(ip) {
+    try {
+      if (!ip) {
+        this.write('You must specify the IP address of the VM that you wish to buy.');
+        return;
+      }
+
+      await this.Game.CloudFuncs.buyServer({ ip: ip });
+      console.log('all good');
+    } catch (err) {
+      this.write(`{red}${err.message}{reset}`);
+    }
   }
 }
 
@@ -97,7 +118,7 @@ export class network extends ShellCommand {
   }
 
   static async run() {
-    this.write(`You are on the {yellow}${this.Game.VMs.network}.x.x{reset} network.`);
+    this.write(`You are on the {magenta}${this.Game.VMs.network}.0.0{reset} network.`);
   }
 }
 
@@ -151,7 +172,7 @@ export class money extends ShellCommand {
   }
 
   static async run() {
-    this.write(`You have {green}$${this.user.money}{reset}.`);
+    this.write(`You have {yellow}$${this.user.money}{reset}.`);
   }
 }
 

@@ -7,5 +7,6 @@ export class CloudFunctions {
 
     // Callable cloud functions
     this.initUserData = httpsCallable(this.functions, 'initUserData');
+    this.buyServer = httpsCallable(this.functions, 'buyServer');
   }
 }

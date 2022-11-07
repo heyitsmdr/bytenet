@@ -120,7 +120,7 @@ export class VMTerminal {
   }
 
   greeting() {
-    this.write('Welcome to the \x1B[1;3;31mByteNet\x1B[0m!');
+    this.write('Welcome to the \x1B[1;3;31mBytenet\x1B[0m!');
   }
 
   auth() {
@@ -195,10 +195,11 @@ export class VMTerminal {
   }
 
   loggedIn() {
-    this.write(`\r\nLogged into the {yellow}${this.Game.VMs.network}.x.x{reset} network.`);
+    this.write(`\r\nLogged into the {magenta}${this.Game.VMs.network}.0.0{reset} network.`);
 
     this.state = TERMINAL_STATE_SHELL;
 
+    this.Game.VMs.show();
     this.updatePrompt();
     this.prompt();
   }
@@ -207,6 +208,7 @@ export class VMTerminal {
     this.user = {};
     this.userUid = '';
     this.Game.FB.logout();
+    this.Game.VMs.hide();
   }
 
   updatePrompt() {

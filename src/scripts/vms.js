@@ -4,9 +4,8 @@ export class VMs {
   constructor(game) {
     this.Game = game;
     this.container = document.querySelector('.vm-container');
-    this.network = '25.240';
+    this.network = '0.0';
     this.servers = {};
-    this.setup();
   }
 
   _addVMsToRow(colNum, row) {  
@@ -20,7 +19,6 @@ export class VMs {
       // VM panel content.
       const ipRow = document.createElement('div');
       ipRow.className = 'ip-address';
-      ipRow.innerText = ip;
       vm.appendChild(ipRow);
 
       const ownerRow = document.createElement('div');
@@ -35,8 +33,18 @@ export class VMs {
         this.Game.Term.addToPrompt(ip);
         this.Game.Term.term.focus();
       });
+
       row.appendChild(vm);
+      this.initVM(ip);
     }
+  }
+
+  show() {
+    this.container.classList.remove('hidden');
+  }
+
+  hide() {
+    this.container.classList.add('hidden');
   }
 
   setup() {
@@ -60,20 +68,61 @@ export class VMs {
     return this.container.querySelector(`[ip="${ip}"]`);
   }
 
-  async handleServerData(data) {
-    if (data.ip.substr(0, this.network.length) != this.network) {
+  setNetwork(network) {
+    // Clear the VM divs.
+    this.container.innerHTML = '';
+
+    // Set the new network, and re-create VM divs.
+    this.network = network;
+    this.setup();
+
+    // Re-sync data.
+    this.resync();
+
+    console.log('Network changed', network);
+  }
+
+  initVM(ip) {
+    const vmDiv = document.querySelector(`[ip="${ip}"]`);
+    vmDiv.className = 'vm';
+
+    const ipRow = vmDiv.querySelector('.ip-address');
+    ipRow.className = 'ip-address';
+    ipRow.innerText = ip;
+
+    const ownerRow = vmDiv.querySelector('.owner');
+    ownerRow.className = 'owner';
+    ownerRow.innerHTML = '<span class="buy-cost">$100</span>';
+
+    const specsRow = vmDiv.querySelector('.specs');
+    specsRow.className = 'specs';
+    specsRow.innerHTML = '';
+    specsRow.classList.add('hidden');
+  }
+
+  async handleServerData(ip, data) {
+    if (ip.substr(0, this.network.length) != this.network) {
       return; // VM is outside of current network.
     }
 
+    if (!data) {
+      // Reset.
+      this.initVM(ip);
+      console.log('removed server', data);
+      return;
+    }
+
     if (data.owner) {
+      console.log(data.owner.constructor.name);
       data.owner = await this.Game.FB.getUserData(data.owner);
-      const vmDiv = document.querySelector(`[ip="${data.ip}"]`);
+      const vmDiv = document.querySelector(`[ip="${ip}"]`);
       vmDiv.classList.add('owned');
 
-      const ownerDiv = document.querySelector(`[ip="${data.ip}"] .owner`);
+      const ownerDiv = document.querySelector(`[ip="${ip}"] .owner`);
       ownerDiv.innerHTML = `<div class="name">${data.owner.nick}</div>`;
 
-      const specsDiv = document.querySelector(`[ip="${data.ip}"] .specs`);
+      const specsDiv = document.querySelector(`[ip="${ip}"] .specs`);
+      specsDiv.classList.remove('hidden');
       specsDiv.innerHTML = '<div>';
       specsDiv.innerHTML += '<div>cpu: <span class="stat">100m</span></div>';
       specsDiv.innerHTML += '<div>mem: <span class="stat">1Gi</span></div>';
@@ -83,5 +132,11 @@ export class VMs {
 
     this.Game.VMs.servers[data.ip] = data;
     console.log('updated server', data);
+  }
+
+  resync() {
+    Object.keys(this.servers).forEach(ip => {
+      this.handleServerData(ip, this.servers[ip]);
+    });
   }
 }
