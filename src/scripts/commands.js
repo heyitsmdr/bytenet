@@ -76,8 +76,6 @@ export class ssh extends ShellCommand {
     let vm = this.Game.VMs.getServer(ip);
     if (!vm) {
       this.write(`No response.\n\n\rThere does not appear to be an active VM running at that address. You can purchase a VM there for {yellow}$100{reset} by running {yellow}buy ${ip}{reset}.`);
-      // await this.Game.FB.initializeServer(ip);
-      // vm = this.Game.VMs.getServer(ip);
       return;
     }
 
