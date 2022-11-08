@@ -46,7 +46,7 @@ jobs:
         working-directory: ./functions
         run: npm ci
 
-      - name:  Deploy - Firebase 🚀
+      - name: Deploy - Firebase 🚀
         uses: w9jds/firebase-action@master
         with:
             args: deploy
@@ -57,3 +57,10 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build
+
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'Bytenet has been deployed successfully!'
