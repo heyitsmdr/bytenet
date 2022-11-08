@@ -143,7 +143,7 @@ export class Firebase {
 
   async getUserData(ref) {
     try {
-      if (ref.constructor.name != 'Xc') {
+      if (!ref.type || ref.type != 'document') {
         // If not a DocumentReference, it must be already expanded, so just return it.
         return ref;
       }

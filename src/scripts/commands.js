@@ -3,7 +3,7 @@
 export function getAliasMap() {
   const map = {};
   Object
-    .keys(this)
+    .keys(module.__proto__.exports)
     .filter(k => k!= 'getAliasMap')
     .forEach(k => {
       if (this[k]['aliases']) {
