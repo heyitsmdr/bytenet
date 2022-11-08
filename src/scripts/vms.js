@@ -113,7 +113,6 @@ export class VMs {
     }
 
     if (data.owner) {
-      console.log(data.owner.constructor.name);
       data.owner = await this.Game.FB.getUserData(data.owner);
       const vmDiv = document.querySelector(`[ip="${ip}"]`);
       vmDiv.classList.add('owned');

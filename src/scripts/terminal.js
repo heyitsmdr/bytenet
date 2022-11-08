@@ -62,6 +62,10 @@ export class VMTerminal {
     this.term.focus();
 
     this.term.onData((k) => {
+      if (this.isLoading) {
+        return;
+      }
+      
       switch(k) {
         case '\u0003': // Ctrl+C
           this.term.write('^C');
@@ -84,7 +88,7 @@ export class VMTerminal {
             }
           }
           break;
-        default: // Print all other characters for demo
+        default: // Print all other characters
           if (k >= String.fromCharCode(0x20) && k <= String.fromCharCode(0x7B) || k >= '\u00a0') {
             if (this.state == TERMINAL_STATE_LOGIN_PASSWORD) {
               this.term.write('*');
@@ -192,6 +196,8 @@ export class VMTerminal {
     } else {
       this.term.writeln(text);
     }
+
+    this.Game.SFX.beep();
   }
 
   loggedIn() {

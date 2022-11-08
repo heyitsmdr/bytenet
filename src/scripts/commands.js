@@ -103,9 +103,10 @@ export class buy extends ShellCommand {
       }
 
       await this.Game.CloudFuncs.buyServer({ ip: ip });
-      console.log('all good');
+      
+      this.write('Server purchased.');
     } catch (err) {
-      this.write(`{red}${err.message}{reset}`);
+      this.write(err.message);
     }
   }
 }

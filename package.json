@@ -60,6 +60,7 @@
     "@babel/polyfill": "^7.12.1",
     "core-js": "^3.20.3",
     "firebase": "^9.12.1",
+    "howler": "^2.2.3",
     "xterm": "^5.0.0",
     "xterm-addon-fit": "^0.6.0"
   }

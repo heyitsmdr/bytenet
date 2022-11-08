@@ -34,6 +34,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Write github sha
+        run: |
+          echo -n "$GITHUB_SHA" > ./public/sha.txt
+
       - name: Build 🔧
         run: |
           npm run build
