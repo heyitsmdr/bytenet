@@ -46,7 +46,7 @@ exports.buyServer = functions.https.onCall(async (data, context) => {
 
   await admin.firestore().collection('servers').doc(data.ip).create({
     ip: data.ip,
-    owner: `/users/${uid}`
+    owner: admin.firestore().collection('users').doc(uid)
   });
 
   return { success: true };

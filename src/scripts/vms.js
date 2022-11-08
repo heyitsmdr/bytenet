@@ -69,6 +69,10 @@ export class VMs {
   }
 
   setNetwork(network) {
+    if (this.network == network) {
+      return;
+    }
+    
     // Clear the VM divs.
     this.container.innerHTML = '';
 
