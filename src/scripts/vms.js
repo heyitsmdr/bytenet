@@ -80,6 +80,10 @@ export class VMs {
     this.network = network;
     this.setup();
 
+    // Listen to servers and messages on this network.
+    this.Game.FB.listenToServers(network);
+    this.Game.FB.listenToMessages(network);
+
     // Re-sync data.
     this.resync();
 
@@ -112,7 +116,7 @@ export class VMs {
     if (!data) {
       // Reset.
       this.initVM(ip);
-      console.log('removed server', data);
+      console.log('removed server', ip);
       return;
     }
 

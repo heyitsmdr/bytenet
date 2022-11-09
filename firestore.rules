@@ -6,11 +6,21 @@ service cloud.firestore {
       || resource.data[field] == request.resource.data[field]
     }
 
-    match /servers/{document=**} {
+    match /networks/{network} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /networks/{network}/servers/{server} {
     	allow write: if request.auth != null;
       allow read: if true;
     }
     
+    match /networks/{network}/messages/{msg} {
+    	allow write: if false;
+      allow read: if true;
+    }
+
     match /users/{document=**} {
       allow get: if true;
       allow list: if false;

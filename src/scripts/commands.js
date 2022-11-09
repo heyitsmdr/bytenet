@@ -175,6 +175,17 @@ export class money extends ShellCommand {
   }
 }
 
+export class bc extends ShellCommand {
+  static help() {
+    return 'Broadcast a message';
+  }
+
+  static async run() {
+    const args = Array.prototype.slice.call(arguments);
+    await this.Game.CloudFuncs.broadcastMessage({ message: args.join(' ') });
+  }
+}
+
 export class ls extends VMCommand {
   static async run() {
     this.write('Test');

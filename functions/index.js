@@ -43,10 +43,29 @@ exports.buyServer = functions.https.onCall(async (data, context) => {
   });
 
   // TODO: Validate IP address (beyond just being in the same network)
+  // TODO: See if the IP is already owned.
 
-  await admin.firestore().collection('servers').doc(data.ip).create({
+  await admin.firestore().collection('networks').doc(user.data().network).collection('servers').doc(data.ip).create({
     ip: data.ip,
     owner: admin.firestore().collection('users').doc(uid)
+  });
+
+  return { success: true };
+});
+
+exports.broadcastMessage = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('failed-precondition', 'You must be authenticated.');
+  }
+
+  const uid = context.auth.uid;
+  const user = await admin.firestore().collection('users').doc(uid).get();
+
+  // TODO: Validate message
+  
+  await admin.firestore().collection('networks').doc(user.data().network).collection('messages').add({
+    nick: user.data().nick,
+    message: data.message
   });
 
   return { success: true };

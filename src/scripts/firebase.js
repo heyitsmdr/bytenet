@@ -38,7 +38,8 @@ export class Firebase {
     this.app = initializeApp(firebaseConfig);
     this.db = getFirestore(this.app);
     this.auth = getAuth(this.app);
-    this.subs = { user: null, servers: null };
+    this.subs = { user: null, servers: null, messages: null };
+    this.messagesInitialized = false;
 
     onAuthStateChanged(this.auth, async user => {
       if(!user) {
@@ -66,23 +67,55 @@ export class Firebase {
         }
       });
     });
+  }
 
-    this.subs['servers'] = onSnapshot(query(collection(this.db, 'servers')), async snapshot => {
-      // First, determine if any servers were removed.
-      const existingIPs = snapshot.docs.map(doc => doc.data()['ip']);
-      Object.keys(this.Game.VMs.servers).forEach(async ip => {
-        if (existingIPs.indexOf(ip) == -1) {
-          await this.Game.VMs.handleServerData(ip, null);
-        }
-      });
+  listenToServers(network) {
+    if (this.subs['servers']) {
+      this.subs['servers']();
+    }
 
-      this.Game.VMs.servers = {};
-      snapshot.forEach(async doc => {
-        const data = doc.data();
-        this.Game.VMs.servers[data.ip] = data;
-      });
+    this.subs['servers'] = onSnapshot(query(
+      collection(this.db, `networks/${network}/servers`)
+    ), this.handleServerCollectionUpdate.bind(this));
+  }
 
-      this.Game.VMs.resync();
+  listenToMessages(network) {
+    if (this.subs['messages']) {
+      this.subs['messages']();
+      this.messagesInitialized = false;
+    }
+
+    this.subs['messages'] = onSnapshot(query(
+      collection(this.db, `networks/${network}/messages`)
+    ), this.handleMessageCollectionUpdate.bind(this));
+  }
+
+  async handleServerCollectionUpdate(snapshot) {
+    snapshot.docChanges().forEach(async change => {
+      switch(change.type) {
+        case 'added':
+        case 'modified':
+          this.Game.VMs.servers[change.doc.data().ip] = change.doc.data();
+          break;
+        case 'removed':
+          delete this.Game.VMs.servers[change.doc.data().ip];
+          await this.Game.VMs.handleServerData(change.doc.data().ip, null);
+      }
+    });
+
+    this.Game.VMs.resync();
+  }
+
+  async handleMessageCollectionUpdate(snapshot) {
+    if (!this.messagesInitialized) {
+      this.messagesInitialized = true;
+      return; // Skip initial state containing all messages from the network.
+    }
+
+    snapshot.docChanges().forEach(change => {
+      if (change.type == 'added') {
+        this.Game.Term.writeAlways(`[${change.doc.data().nick}] ${change.doc.data().message}`);
+      }
     });
   }
 

@@ -200,6 +200,25 @@ export class VMTerminal {
     this.Game.SFX.beep();
   }
 
+  writeAlways(text) {
+    if (this.isLoading) {
+      this.write(`\n\r${text}`);
+      return;
+    }    
+    
+    // Clear the current line
+    this.term.write('\x1b[2K\r');
+
+    // Write the text.
+    this.write(`\r${text}`);
+
+    // Re-prompt.
+    this.prompt();
+
+    // Re-add text already in buffer
+    this.write(this.command, true);
+  }
+
   loggedIn() {
     this.write(`\r\nLogged into the {magenta}${this.Game.VMs.network}.0.0{reset} network.`);
 
