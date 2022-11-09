@@ -169,8 +169,15 @@ export class VMTerminal {
   }
 
   addToPrompt(text) {
+    // Prevent adding to prompt if something is loading.
+    if (this.isLoading) {
+      return false;
+    }
+
     this.write(text, true);
     this.command += text;
+
+    return true;
   }
 
   setLoadingState(loading) {
@@ -286,8 +293,14 @@ export class VMTerminal {
         }
       }
 
-      const vmOnly = C.isVmCommand();
-      if (vmOnly && this.connectedTo.length == 0) {
+      const contexts = C.getContexts();
+      const onVm = (this.connectedTo.length > 0);
+
+      if (onVm && contexts.indexOf('vm') == -1) {
+        this.write('You cannot run that command on a server. Disconnect first.');
+        this.prompt();
+        return;
+      } else if (!onVm && contexts.indexOf('network') == -1) {
         this.write('You must be connected to a server first.');
         this.prompt();
         return;

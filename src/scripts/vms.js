@@ -29,9 +29,25 @@ export class VMs {
       specsRow.className = 'specs';
       vm.appendChild(specsRow);
 
-      vm.addEventListener('click', () => {
-        this.Game.Term.addToPrompt(ip);
+      vm.addEventListener('click', (e) => {
+        const isOwned = document.querySelector(`.vm.owned[ip="${ip}"]`);
+        
         this.Game.Term.term.focus();
+
+        if (e.shiftKey) {
+          this.Game.Term.addToPrompt(ip);
+          return;
+        } else if (isOwned) {
+          if (!this.Game.Term.addToPrompt(`ssh ${ip}`)) {
+            return false;
+          }
+        } else {
+          if (!this.Game.Term.addToPrompt(`buy ${ip}`)) {
+            return false;
+          }
+        }
+        
+        this.Game.Term.runCommand();
       });
 
       row.appendChild(vm);

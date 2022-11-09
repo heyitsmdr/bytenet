@@ -17,19 +17,22 @@ export function getAliasMap() {
 // eslint-disable-next-line no-undef
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-class ShellCommand {
-  static isVmCommand() {
-    return false;
+const ON_NETWORK = 'network';
+const ON_VM = 'vm';
+
+class GenericCommand {
+  static getContexts() {
+    return [ON_NETWORK];
   }
 }
 
 class VMCommand {
-  static isVmCommand() {
-    return true;
+  static getContexts() {
+    return [ON_VM];
   }
 }
 
-export class echo extends ShellCommand {
+export class echo extends GenericCommand {
   static help() {
     return 'Echos text back to the terminal.';
   }
@@ -40,7 +43,7 @@ export class echo extends ShellCommand {
   }
 }
 
-export class uid extends ShellCommand {
+export class uid extends GenericCommand {
   static help() {
     return 'Returns your user id on the server.';
   }
@@ -50,7 +53,7 @@ export class uid extends ShellCommand {
   }
 }
 
-export class ssh extends ShellCommand {
+export class ssh extends GenericCommand {
   static help() {
     return 'Connect to a remote server.';
   }
@@ -90,7 +93,7 @@ export class ssh extends ShellCommand {
   }
 }
 
-export class buy extends ShellCommand {
+export class buy extends GenericCommand {
   static help() {
     return 'Purchase a VM.';
   }
@@ -111,7 +114,7 @@ export class buy extends ShellCommand {
   }
 }
 
-export class network extends ShellCommand {
+export class network extends GenericCommand {
   static help() {
     return 'Network settings.';
   }
@@ -121,7 +124,7 @@ export class network extends ShellCommand {
   }
 }
 
-export class nick extends ShellCommand {
+export class nick extends GenericCommand {
   static help() {
     return 'Nick settings.';
   }
@@ -138,7 +141,7 @@ export class nick extends ShellCommand {
   }
 }
 
-export class exit extends ShellCommand {
+export class exit extends GenericCommand {
   static help() {
     return 'Logout.';
   }
@@ -149,6 +152,10 @@ export class exit extends ShellCommand {
 
   static prompt() {
     return false;
+  }
+
+  static getContexts() {
+    return [ON_NETWORK, ON_VM];
   }
 
   static async run() {
@@ -165,7 +172,7 @@ export class exit extends ShellCommand {
   }
 }
 
-export class money extends ShellCommand {
+export class money extends GenericCommand {
   static help() {
     return 'Displays how much money you have.';
   }
@@ -175,7 +182,7 @@ export class money extends ShellCommand {
   }
 }
 
-export class bc extends ShellCommand {
+export class bc extends GenericCommand {
   static help() {
     return 'Broadcast a message';
   }
