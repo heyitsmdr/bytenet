@@ -25,9 +25,9 @@ export class VMs {
       ownerRow.className = 'owner';
       vm.appendChild(ownerRow);
 
-      const specsRow = document.createElement('div');
-      specsRow.className = 'specs';
-      vm.appendChild(specsRow);
+      const statusRow = document.createElement('div');
+      statusRow.className = 'status';
+      vm.appendChild(statusRow);
 
       vm.addEventListener('click', (e) => {
         const isOwned = document.querySelector(`.vm.owned[ip="${ip}"]`);
@@ -118,10 +118,10 @@ export class VMs {
     ownerRow.className = 'owner';
     ownerRow.innerHTML = '<span class="buy-cost">$100</span>';
 
-    const specsRow = vmDiv.querySelector('.specs');
-    specsRow.className = 'specs';
-    specsRow.innerHTML = '';
-    specsRow.classList.add('hidden');
+    const statusRow = vmDiv.querySelector('.status');
+    statusRow.className = 'status';
+    statusRow.innerHTML = '';
+    statusRow.classList.add('hidden');
   }
 
   async handleServerData(ip, data) {
@@ -144,13 +144,11 @@ export class VMs {
       const ownerDiv = document.querySelector(`[ip="${ip}"] .owner`);
       ownerDiv.innerHTML = `<div class="name">${data.owner.nick}</div>`;
 
-      const specsDiv = document.querySelector(`[ip="${ip}"] .specs`);
-      specsDiv.classList.remove('hidden');
-      specsDiv.innerHTML = '<div>';
-      specsDiv.innerHTML += '<div>cpu: <span class="stat">100m</span></div>';
-      specsDiv.innerHTML += '<div>mem: <span class="stat">1Gi</span></div>';
-      specsDiv.innerHTML += '<div>disk: <span class="stat">100Gi</span></div>';
-      specsDiv.innerHTML += '</div>';
+      const statusDiv = document.querySelector(`[ip="${ip}"] .status`);
+      statusDiv.classList.remove('hidden');
+      statusDiv.innerHTML = '<div>';
+      statusDiv.innerHTML += 'Idle.';
+      statusDiv.innerHTML += '</div>';
     }
 
     this.Game.VMs.servers[data.ip] = data;

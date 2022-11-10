@@ -3,7 +3,7 @@ import {
   getFirestore,
   doc,
   getDoc,
-//getDocs,
+  getDocs,
   query,
   collection,
 //  setDoc,
@@ -181,6 +181,17 @@ export class Firebase {
         return ref;
       }
       return (await getDoc(ref)).data();
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  async getNetworks() {
+    try {
+      const snapshot = await getDocs(query(collection(this.db, 'networks')));
+      const networks = {};
+      snapshot.forEach(n => networks[n.id] = n.data());
+      return networks;
     } catch(err) {
       console.log(err);
     }

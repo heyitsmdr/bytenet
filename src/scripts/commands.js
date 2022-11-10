@@ -119,8 +119,31 @@ export class network extends GenericCommand {
     return 'Network settings.';
   }
 
-  static async run() {
-    this.write(`You are on the {magenta}${this.Game.VMs.network}.0.0{reset} network.`);
+  static aliases() {
+    return ['nw'];
+  }
+
+  static async run(newNetwork) {
+    const networks = await this.Game.FB.getNetworks();
+
+    if (newNetwork) {
+      newNetwork = newNetwork.replace('.0.0', '');
+      if (Object.keys(networks).indexOf(newNetwork) == -1) {
+        this.write('That is not a valid network to connect to.');
+        return;
+      }
+
+      this.write('Will change network now.');
+      
+      return;
+    }
+
+    this.write(`There are ${Object.keys(networks).length} available networks in space.\n\n\rAvailable networks:`);
+    Object.keys(networks).forEach(network => {
+      const data = networks[network];
+      const color = (network == this.Game.VMs.network) ? 'yellow' : 'magenta';
+      this.write(`{${color}}${network}.0.0{reset}\t${data.description} (${data.type})`);
+    });
   }
 }
 
