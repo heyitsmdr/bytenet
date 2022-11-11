@@ -2,10 +2,10 @@ import { Terminal } from 'xterm';
 import * as Commands from './commands';
 
 const theme = {
-  foreground: '#86eb8a',
+  foreground: '#32df17',
   background: '#282a36',
   selection: '#97979b33',
-  black: '#282a36',
+  black: '#6c6c6c',
   brightBlack: '#686868',
   red: '#ff5c57',
   brightRed: '#ff5c57',
@@ -86,6 +86,8 @@ export class VMTerminal {
             if (this.command.length > 0) {
               this.command = this.command.substr(0, this.command.length - 1);
             }
+
+            this.Game.SFX.typing();
           }
           break;
         default: // Print all other characters
@@ -102,6 +104,7 @@ export class VMTerminal {
             }
 
             this.command += k;
+            this.Game.SFX.typing();
           }
       }
     });
@@ -191,6 +194,7 @@ export class VMTerminal {
   }
 
   write(text, noNewLine) {
+    text = text.replace(/\{black\}/g, '\x1B[30m');
     text = text.replace(/\{red\}/g, '\x1B[31m');
     text = text.replace(/\{green\}/g, '\x1B[32m');
     text = text.replace(/\{yellow\}/g, '\x1B[33m');

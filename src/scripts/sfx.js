@@ -10,9 +10,16 @@ export class SFX {
     this._beep = new Howl({
       src: ['sfx/beep.wav']
     });
+    this._typing = new Howl({
+      src: ['sfx/typing.mp3']
+    });
   }
 
   beep() {
     this._beep.play();
+  }
+
+  typing() {
+    this._typing.play();
   }
 }

@@ -112,9 +112,10 @@ export class Firebase {
       return; // Skip initial state containing all messages from the network.
     }
 
+    const d = new Date();
     snapshot.docChanges().forEach(change => {
       if (change.type == 'added') {
-        this.Game.Term.writeAlways(`[${change.doc.data().nick}] ${change.doc.data().message}`);
+        this.Game.Term.writeAlways(`{black}${d.getHours()}${d.getMinutes()}{reset} {magenta}network{reset} from {cyan}${change.doc.data().nick}{reset}: ${change.doc.data().message}`);
       }
     });
   }
