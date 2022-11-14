@@ -113,9 +113,11 @@ export class Firebase {
     }
 
     const d = new Date();
+    const hours = ('0' + d.getHours()).substr(-2);
+    const minutes = ('0' + d.getMinutes()).substr(-2);
     snapshot.docChanges().forEach(change => {
       if (change.type == 'added') {
-        this.Game.Term.writeAlways(`{black}${d.getHours()}${d.getMinutes()}{reset} {magenta}network{reset} from {cyan}${change.doc.data().nick}{reset}: ${change.doc.data().message}`);
+        this.Game.Term.writeAlways(`{black}${hours}${minutes}{reset} {magenta}${this.Game.VMs.network}{reset} {cyan}${change.doc.data().nick}{reset}: ${change.doc.data().message}`);
       }
     });
   }

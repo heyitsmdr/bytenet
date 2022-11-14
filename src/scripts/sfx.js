@@ -7,12 +7,8 @@ export class SFX {
       loop: true,
       autoplay: true
     });
-    this._beep = new Howl({
-      src: ['sfx/beep.wav']
-    });
-    this._typing = new Howl({
-      src: ['sfx/typing.mp3']
-    });
+    this._beep = new Howl({ src: ['sfx/beep.wav'] });
+    this._typing = new Howl({ src: ['sfx/typing.mp3'] });
   }
 
   beep() {

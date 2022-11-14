@@ -27,7 +27,7 @@ const termSettings = {
   cursorBlink: true,
   theme: theme,
   // fontFamily: '"Ubuntu", sans-serif',
-  // letterSpacing: '1'
+  // letterSpacing: 1
 };
 
 const TERMINAL_STATE_LOGIN_EMAIL = 'TERMINAL_STATE_LOGIN_EMAIL';
