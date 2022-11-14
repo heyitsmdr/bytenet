@@ -114,6 +114,7 @@ export class VMTerminal {
         const lastCommand = this.history[this.history.length-1];
         this.term.write(lastCommand);
         this.command = lastCommand;
+        this.Game.SFX.typing();
       }
     });
 

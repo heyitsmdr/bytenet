@@ -158,7 +158,7 @@ export class nick extends GenericCommand {
       return;
     }
 
-    await this.Game.FB.updateUser({ nick: newNick });
+    await this.Game.CloudFuncs.updateNick({ nick: newNick });
     this.write('Nick changed.');
     this.updatePrompt();
   }
@@ -195,13 +195,17 @@ export class exit extends GenericCommand {
   }
 }
 
-export class money extends GenericCommand {
+export class balance extends GenericCommand {
   static help() {
-    return 'Displays how much money you have.';
+    return 'Displays your account balance.';
+  }
+
+  static aliases() {
+    return ['bal'];
   }
 
   static async run() {
-    this.write(`You have {yellow}$${this.user.money}{reset}.`);
+    this.write(`Your account balance is {yellow}$${this.user.money}{reset}.`);
   }
 }
 

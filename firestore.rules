@@ -26,7 +26,7 @@ service cloud.firestore {
       allow list: if false;
       allow create: if false;
       allow delete: if false;
-      allow update: if request.auth != null && notUpdating('uid') && notUpdating('money') && notUpdating('network')
+      allow update: if false;
     }
   }
 }

@@ -6,8 +6,6 @@ import {
   getDocs,
   query,
   collection,
-//  setDoc,
-  updateDoc,
   onSnapshot
 } from 'firebase/firestore';
 import {
@@ -165,14 +163,6 @@ export class Firebase {
       this.Game.Term.write('{green}Initializing user..{reset}');
       await this.Game.CloudFuncs.initUserData({ nick: email.split('@')[0] });
     } catch (err) {
-      console.log(err);
-    }
-  }
-
-  async updateUser(data) {
-    try {
-      await updateDoc(doc(this.db, 'users', this.auth.currentUser.uid), data);
-    } catch(err) {
       console.log(err);
     }
   }

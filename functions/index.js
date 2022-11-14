@@ -53,6 +53,18 @@ exports.buyServer = functions.https.onCall(async (data, context) => {
   return { success: true };
 });
 
+exports.updateNick = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('failed-precondition', 'You must be authenticated.');
+  }
+
+  await admin.firestore().collection('users').doc(context.auth.uid).update({
+    nick: data.nick
+  });
+
+  return { success: true };
+});
+
 exports.broadcastMessage = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('failed-precondition', 'You must be authenticated.');
