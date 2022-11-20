@@ -1,10 +1,10 @@
 import { getFunctions, httpsCallable } from 'firebase/functions';
 
 const CLOUD_FUNCS = [
-  'initUserData',
-  'buyServer',
-  'broadcastMessage',
-  'updateNick',
+  { group: 'user', func: 'initUserData' },
+  { group: 'user', func: 'updateNick' },
+  { group: 'game', func: 'buyServer' },
+  { group: 'game', func: 'broadcastMessage' },
 ];
 
 export class CloudFunctions {
@@ -13,7 +13,7 @@ export class CloudFunctions {
     this.functions = getFunctions(game.FB.app);
 
     CLOUD_FUNCS.forEach(f => {
-      this[f] = httpsCallable(this.functions, f);
+      this[f.func] = httpsCallable(this.functions, `${f.group}-${f.func}`);
     });
   }
 }
